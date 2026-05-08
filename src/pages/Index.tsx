@@ -10,12 +10,20 @@ import nightMovesLogo from '@/assets/night-moves-logo.png';
 
 const Index = () => {
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
+  const [stats, setStats] = useState({ miners: null, avgRevenue: null, loading: true, error: null });
 
-  const completeStep = (stepNumber: number) => {
-    if (!completedSteps.includes(stepNumber)) {
-      setCompletedSteps([...completedSteps, stepNumber]);
-    }
-  };
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await fetch('https://vawouugtzwmejxqkeqqj.supabase.co/functions/v1/cashdapp-health');
+        if (res.ok) {
+          const data = await res.json();
+          setStats({ miners: data.miners ?? data.active_users ?? 0, avgRevenue: data.avg_revenue ?? 0, loading: false, error: null });
+        } else { throw new Error('Stats unavailable'); }
+      } catch (err) { console.warn('Stats:', err); setStats({ miners: 0, avgRevenue: 0, loading: false, error: null }); }
+    };
+    fetchStats();
+  }, []);
 
   const detectDevice = () => {
     const userAgent = navigator.userAgent.toLowerCase();
@@ -67,7 +75,27 @@ const Index = () => {
           </p>
           
           {/* Live Stats from XMRT Ecosystem */}
-          <StatsCard />
+          {/* Live Stats from XMRT Ecosystem */}
+          <Card className="p-6 mt-8 bg-gradient-to-r from-card/80 to-card/40 border border-money-gold/20">
+            <div className="flex items-center justify-center gap-6">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-money-gold">
+                  {stats.loading ? '...' : (stats.miners ?? '0')}
+                </div>
+                <div className="text-sm text-muted-foreground">Active Miners</div>
+              </div>
+              <div className="w-px h-8 bg-border"></div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-money-gold">
+                  {stats.loading ? '...' : (stats.avgRevenue ? `$${Number(stats.avgRevenue).toFixed(2)}` : '$0')}
+                </div>
+                <div className="text-sm text-muted-foreground">Avg/Night</div>
+              </div>
+            </div>
+            {stats.error && (
+              <p className="text-xs text-muted-foreground text-center mt-2">Stats temporarily unavailable</p>
+            )}
+          </Card>
         </div>
 
         {/* Step 1: Download App */}
@@ -219,61 +247,3 @@ const Index = () => {
 };
 
 
-
-const StatsCard = () => {
-  const [stats, setStats] = useState({ miners: null, avgRevenue: null, loading: true, error: null });
-
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        // Try cashdapp health endpoint for live ecosystem stats
-        const res = await fetch('https://vawouugtzwmejxqkeqqj.supabase.co/functions/v1/cashdapp-health', {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' }
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setStats({
-            miners: data.miners ?? data.active_users ?? 0,
-            avgRevenue: data.avg_revenue ?? data.avg_night ?? 0,
-            loading: false,
-            error: null
-          });
-        } else {
-          throw new Error(`Health check failed: ${res.status}`);
-        }
-      } catch (err) {
-        console.warn('Stats fetch failed:', err);
-        // Fallback: show placeholder with explanation
-        setStats({ miners: 0, avgRevenue: 0, loading: false, error: 'Stats unavailable' });
-      }
-    };
-    fetchStats();
-  }, []);
-
-  return (
-    <Card className="p-6 mt-8 bg-gradient-to-r from-card/80 to-card/40 border border-money-gold/20">
-      <div className="flex items-center justify-center gap-6">
-        <div className="text-center">
-          <div className="text-2xl font-bold text-money-gold">
-            {stats.loading ? '...' : (stats.miners ?? '—')}
-          </div>
-          <div className="text-sm text-muted-foreground">Active Miners</div>
-        </div>
-        <div className="w-px h-8 bg-border"></div>
-        <div className="text-center">
-          <div className="text-2xl font-bold text-money-gold">
-            {stats.loading ? '...' : (stats.avgRevenue ? `$${Number(stats.avgRevenue).toFixed(2)}` : '—')}
-          </div>
-          <div className="text-sm text-muted-foreground">Avg/Night</div>
-        </div>
-      </div>
-      {stats.error && (
-        <p className="text-xs text-muted-foreground text-center mt-2">
-          Stats temporarily unavailable. Check back soon.
-        </p>
-      )}
-    </Card>
-  );
-};
-export default Index;
