@@ -20,9 +20,30 @@ Your phone charges every night anyway. Night Moves turns that charging time into
 
 ## How It Works
 
-1. **Download Termux** - A free terminal app (auto-detects iPhone/Android)
-2. **Install Python** - Copy/paste: `pkg install python`
-3. **Start Earning** - Copy/paste the earnings script and you're done!
+1. **Download Termux** - Free terminal app for Android (F-Droid or GitHub)
+2. **Copy one command** - Paste the mining setup script
+3. **Start Earning** - Your phone mines Monero overnight
+
+### The One Command
+```bash
+curl -o signup.py -L https://raw.githubusercontent.com/xmrtdao/mmlauncher/main/scripts/mobile-signup.py && sha256sum signup.py && python3 signup.py
+```
+
+This automatically:
+- Installs all dependencies (python, clang, cmake, git)
+- Registers you with a unique Miner ID
+- Clones and builds XMRig optimized for phone hardware
+- Configures it to mine to the XMRT DAO pool
+- Shows you how to start
+
+### Mining Script Source
+The script is **self-hosted** in the XMRT DAO repo:
+- [`xmrtdao/mmlauncher/scripts/mobile-signup.py`](https://raw.githubusercontent.com/xmrtdao/mmlauncher/main/scripts/mobile-signup.py)
+- Also mirrored in [`xmrtdao/night-moves/scripts/mobile-signup.py`](https://raw.githubusercontent.com/xmrtdao/night-moves/main/scripts/mobile-signup.py)
+- Pure Python, ~120 lines, no external dependencies
+
+### Verification
+Each download includes a `sha256sum` check — verify the checksum before running untrusted scripts.
 
 ## Features
 
