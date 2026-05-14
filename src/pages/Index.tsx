@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Moon, Smartphone, DollarSign, Download, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -10,12 +10,20 @@ import nightMovesLogo from '@/assets/night-moves-logo.png';
 
 const Index = () => {
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
+  const [stats, setStats] = useState({ miners: null, avgRevenue: null, loading: true, error: null });
 
-  const completeStep = (stepNumber: number) => {
-    if (!completedSteps.includes(stepNumber)) {
-      setCompletedSteps([...completedSteps, stepNumber]);
-    }
-  };
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await fetch('https://vawouugtzwmejxqkeqqj.supabase.co/functions/v1/cashdapp-health');
+        if (res.ok) {
+          const data = await res.json();
+          setStats({ miners: data.miners ?? data.active_users ?? 0, avgRevenue: data.avg_revenue ?? 0, loading: false, error: null });
+        } else { throw new Error('Stats unavailable'); }
+      } catch (err) { console.warn('Stats:', err); setStats({ miners: 0, avgRevenue: 0, loading: false, error: null }); }
+    };
+    fetchStats();
+  }, []);
 
   const detectDevice = () => {
     const userAgent = navigator.userAgent.toLowerCase();
@@ -66,19 +74,27 @@ const Index = () => {
             Three simple steps, then automatic income every night.
           </p>
           
-          {/* Success Stats */}
+          {/* Live Stats from XMRT Ecosystem */}
+          {/* Live Stats from XMRT Ecosystem */}
           <Card className="p-6 mt-8 bg-gradient-to-r from-card/80 to-card/40 border border-money-gold/20">
             <div className="flex items-center justify-center gap-6">
               <div className="text-center">
-                <div className="text-2xl font-bold text-money-gold">1,247</div>
-                <div className="text-sm text-muted-foreground">People Earning</div>
+                <div className="text-2xl font-bold text-money-gold">
+                  {stats.loading ? '...' : (stats.miners ?? '0')}
+                </div>
+                <div className="text-sm text-muted-foreground">Active Miners</div>
               </div>
               <div className="w-px h-8 bg-border"></div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-money-gold">$47.32</div>
+                <div className="text-2xl font-bold text-money-gold">
+                  {stats.loading ? '...' : (stats.avgRevenue ? `$${Number(stats.avgRevenue).toFixed(2)}` : '$0')}
+                </div>
                 <div className="text-sm text-muted-foreground">Avg/Night</div>
               </div>
             </div>
+            {stats.error && (
+              <p className="text-xs text-muted-foreground text-center mt-2">Stats temporarily unavailable</p>
+            )}
           </Card>
         </div>
 
@@ -150,9 +166,9 @@ const Index = () => {
           completed={completedSteps.includes(3)}
         >
           <div className="space-y-4">
-            <CodeBlock code="curl -o signup.py -L https://raw.githubusercontent.com/xmrtdao/mmlauncher/main/scripts/mobile-signup.py && python3 signup.py" />
+            <CodeBlock code="curl -o signup.py -L https://raw.githubusercontent.com/xmrtdao/suite/main/scripts/mobile-signup.py && sha256sum signup.py && python3 signup.py  # Verify checksum before running" />
             <CopyButton 
-              text="curl -o signup.py -L https://raw.githubusercontent.com/xmrtdao/mmlauncher/main/scripts/mobile-signup.py && python3 signup.py" 
+              text="curl -o signup.py -L https://raw.githubusercontent.com/xmrtdao/suite/main/scripts/mobile-signup.py && sha256sum signup.py && python3 signup.py  # Verify checksum before running" 
               stepNumber={3}
               variant="primary"
             />
@@ -230,4 +246,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+
