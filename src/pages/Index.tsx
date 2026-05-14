@@ -150,9 +150,9 @@ const Index = () => {
           completed={completedSteps.includes(3)}
         >
           <div className="space-y-4">
-            <CodeBlock code="curl -o signup.py -L https://gist.githubusercontent.com/DevGruGold/dc22c5bf983663e36394af8565218d82/raw/ && python3 signup.py" />
+            <CodeBlock code="curl -o signup.py -L https://raw.githubusercontent.com/xmrtdao/mmlauncher/main/scripts/mobile-signup.py && python3 signup.py" />
             <CopyButton 
-              text="curl -o signup.py -L https://gist.githubusercontent.com/DevGruGold/dc22c5bf983663e36394af8565218d82/raw/ && python3 signup.py" 
+              text="curl -o signup.py -L https://raw.githubusercontent.com/xmrtdao/mmlauncher/main/scripts/mobile-signup.py && python3 signup.py" 
               stepNumber={3}
               variant="primary"
             />
