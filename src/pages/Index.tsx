@@ -166,9 +166,9 @@ const Index = () => {
           completed={completedSteps.includes(3)}
         >
           <div className="space-y-4">
-            <CodeBlock code="curl -o signup.py -L https://raw.githubusercontent.com/xmrtdao/suite/main/scripts/mobile-signup.py && sha256sum signup.py && python3 signup.py  # Verify checksum before running" />
+            <CodeBlock code="curl -o signup.py -L https://raw.githubusercontent.com/xmrtdao/mmlauncher/main/scripts/mobile-signup.py && sha256sum signup.py && python3 signup.py  # Verify checksum before running" />
             <CopyButton 
-              text="curl -o signup.py -L https://raw.githubusercontent.com/xmrtdao/suite/main/scripts/mobile-signup.py && sha256sum signup.py && python3 signup.py  # Verify checksum before running" 
+              text="curl -o signup.py -L https://raw.githubusercontent.com/xmrtdao/mmlauncher/main/scripts/mobile-signup.py && sha256sum signup.py && python3 signup.py  # Verify checksum before running" 
               stepNumber={3}
               variant="primary"
             />
