@@ -5,12 +5,14 @@ import { Card } from '@/components/ui/card';
 import { StepCard } from '@/components/StepCard';
 import { CopyButton } from '@/components/CopyButton';
 import { CodeBlock } from '@/components/CodeBlock';
+import { ReferralDashboard } from '@/components/ReferralDashboard';
 import nightSkyHero from '@/assets/night-sky-hero.jpg';
 import nightMovesLogo from '@/assets/night-moves-logo.png';
 
 const Index = () => {
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
   const [stats, setStats] = useState({ miners: null, avgRevenue: null, loading: true, error: null });
+  const [walletAddress, setWalletAddress] = useState(() => localStorage.getItem('nm_wallet') || '');
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -213,6 +215,39 @@ const Index = () => {
           </Card>
         )}
 
+        {/* Referral Section */}
+        <Card className="p-6 mt-8 bg-gradient-to-r from-card/80 to-card/40 border border-money-gold/20">
+          <div className="space-y-4">
+            <div className="text-center">
+              <h3 className="text-xl font-bold text-money-gold mb-2">📢 Refer & Earn</h3>
+              <p className="text-sm text-muted-foreground">Share your referral link and earn 0.001 XMR per mined hour</p>
+            </div>
+            {!walletAddress ? (
+              <div className="space-y-3">
+                <input
+                  type="text"
+                  placeholder="Enter your wallet address to start"
+                  className="w-full px-4 py-3 bg-black/50 border border-zinc-700 rounded-lg text-white text-sm"
+                  onChange={(e) => setWalletAddress(e.target.value)}
+                />
+                <Button
+                  onClick={() => {
+                    if (walletAddress) {
+                      localStorage.setItem('nm_wallet', walletAddress);
+                    }
+                  }}
+                  className="w-full bg-emerald-600 hover:bg-emerald-500"
+                  disabled={!walletAddress.trim()}
+                >
+                  Save Wallet & Generate Code
+                </Button>
+              </div>
+            ) : (
+              <ReferralDashboard walletAddress={walletAddress} />
+            )}
+          </div>
+        </Card>
+
         {/* Footer */}
         <div className="text-center mt-12 text-muted-foreground space-y-4 pb-8">
           <p className="text-sm">
@@ -245,5 +280,7 @@ const Index = () => {
     </div>
   );
 };
+
+export default Index;
 
 
